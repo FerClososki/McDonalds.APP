@@ -1,8 +1,9 @@
 import {
   View, Text, Image, StyleSheet, TouchableOpacity,
   SafeAreaView, StatusBar,
-  SafeAreaViewBase
 } from 'react-native';
+
+import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
 export default function App() {
   return (
@@ -15,9 +16,28 @@ export default function App() {
         </View>
         <View>
           <Text>Seja Bem-Vindo!</Text>
-          <Text>Escolha como prefere aproveitar sua refeição. Estamos aqui 
+          <Text>Escolha como prefere aproveitar sua refeição. Estamos aqui
             para oferecer praticidade e sabor em cada detalhe!
-            </Text>
+          </Text>
+        </View>
+        <View>
+          <TouchableOpacity>
+          <View>
+            <MaterialCommunityIcons 
+            name='hamburger'/>
+          </View>
+          <View>
+            <Text>Para comer aqui!</Text>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View>
+              <Feather name="shopping-bag"/>
+            </View>
+            <View>
+              <Text>Para levar:</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
