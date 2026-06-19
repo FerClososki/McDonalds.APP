@@ -36,7 +36,7 @@ export default function HomeScreen({ navigation }: Props) {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.brandName}>Mc'Donalds</Text>
+          <Text style={styles.brandName}>McDonald's</Text>
         </View>
 
         {/* ===== MEIO: textos de boas-vindas ===== */}
