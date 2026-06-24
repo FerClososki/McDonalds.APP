@@ -1,181 +1,418 @@
+import { useState } from "react"
 import {
     View,
     Text,
     Image,
+    ScrollView, // Permite Rolar a tela
     StyleSheet,
     TouchableOpacity,
-    SafeAreaView,
-    StatusBar,
+    StatusBar
 } from 'react-native';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
- 
- 
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
- 
- 
-export type RootStackParamList = {
-    Home: undefined;
-    Menu: undefined;
-};
- 
- 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
- 
-export default function HomeScreen({ navigation }: Props) {
+import { Ionicons, Feather } from "@expo/vector-icons";
+
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "./HomeScreen";
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Menu'>
+
+type Product = {
+    id: string;
+    name: string;
+    description: string;
+    price: string;
+    image: number;
+}
+
+const combos: Product[] = [
+    {
+        id: 'combo-1',
+        name: 'McOferta Média Big Mac Duplo',
+        description: 'Quatro hambúrgueres (100% carne bovina), alface americana...',
+        price: 'R$ 39,90',
+        image: require('../images/combo-big-mac-duplo.png'),
+    },
+    {
+        id: 'combo-2',
+        name: 'Novo Brabo Melt Onion Rings',
+        description: 'Dois hambúrgueres de carne 100% bovina, méquinese, a exclu...',
+        price: 'R$ 41,50',
+        image: require('../images/combo-brabo-melt-onion-rings.png'),
+    },
+    {
+        id: 'combo-3',
+        name: 'MCCrispy Chicken Elite',
+        description: 'Composto por pão tipo brioche com batata, molho Honey&Fire, ...',
+        price: 'R$ 39,90',
+        image: require('../images/combo-mcrispy-elite.png'),
+    },
+    {
+        id: 'combo-4',
+        name: 'Duplo Cheddar McMelt',
+        description: 'Dois hambúrgueres (100% carne bovina), molho lácteo com quij...',
+        price: 'R$ 36,20',
+        image: require('../images/combo-duplo-cheddar-mcmelt.png'),
+    }
+];
+
+const lanches: Product[] = [
+    {
+        id: 'lanche-1',
+        name: 'Big Mac',
+        description: 'Dois hambúrgueres (100% carne bovina), alface americana, queijo...',
+        price: 'R$ 39,90',
+        image: require('../images/lanche-big-mac.png'),
+    },
+    {
+        id: 'lanche-2',
+        name: 'Duplo Quarteirão',
+        description: ' Dois hambúrgueres de carne 100% bovina, méquinese, alface americana, queijo...',
+        price: 'R$ 41,50',
+        image: require('../images/lanche-duplo-quarteirao.png'),
+    },
+    {
+        id: 'lanche-3',
+        name: 'Cheddar McMelt',
+        description: 'Hambúrguer (100% carne bovina), molho lácteo com queijo cheddar, pão tipo brioche...',
+        price: 'R$ 36,20',
+        image: require('../images/lanche-cheddar-mcmelt.png'),
+    },
+    {
+        id: 'lanche-4',
+        name: 'McCrispy Chicken',
+        description: 'Pão tipo brioche com batata, molho Honey&Fire, alface americana, tomate e crispy de frango...',
+        price: 'R$ 36,20',
+        image: require('../images/lanche-mcrispy-chicken.png'),
+    },
+];
+const fritas: Product[] = [
+    {
+        id: 'fritas-1',
+        name: 'Fritas Grandes',
+        description: 'Batata frita crocante e sequinhas. Vem bastante.',
+        price: 'R$ 12,90',
+        image: require('../images/fritas-grandes.png'),
+    },
+    {
+        id: 'fritas-2',
+        name: 'Fritas Médias',
+        description: 'Batata frita crocante e sequinhas. Vem bastante.',
+        price: 'R$ 9,90',
+        image: require('../images/fritas-medias.png'),
+    },
+    {
+        id: 'fritas-3',
+        name: 'Fritas Pequenas',
+        description: 'Batata frita crocante e sequinhas. Vem bastante.',
+        price: 'R$ 7,90',
+        image: require('../images/fritas-pequenas.png'),
+    },
+];
+
+const bebidas: Product[] = [
+    {
+        id: 'bebida-1',
+        name: 'Coca-cola',
+        description: 'Coca-cola gelada para acompanhar seu lache.',
+        price: 'R$ 5,90',
+        image: require('../images/coca-cola.png'),
+    },
+    {
+        id: 'bebida-2',
+        name: 'Fanta Laranja',
+        description: 'Fanta Laranja  gelada para ',
+        price: 'R$ 5,90',
+        image: require('../images/fanta-laranja.png'),
+    },
+    {
+        id: 'bebida-3',
+        name: 'Agua mineral',
+        description: 'Agua mineral sem gás, para acompanhar seu lanche.',
+        price: 'R$ 5,90',
+        image: require('../images/agua.png'),
+    },
+]
+const categories = ['combos', 'Lanches', 'Fritas', 'Bebidas'];
+
+function getProdutos(categoriaSelecionada: string): Product[] {
+    switch (categoriaSelecionada) {
+        case 'Combos':
+            return combos;
+        case 'Lanches':
+            return lanches;
+        case 'Fritas':
+            return fritas;
+        case 'Bebidas':
+            return bebidas;
+        default:
+            return combos;
+    }
+}
+
+export default function MenuScreen({ navigation }: Props) {
+    const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('Combos');
+
+    const produtosDaCategoria = getProdutos(categoriaSelecionada);
     return (
-        // SafeAreaView: respeita notch/barras do sistema.
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
- 
-            {/* View principal — flex: 1 ocupa tudo, alignItems/justifyContent centraliza */}
-            <View style={styles.container}>
-                {/* ===== TOPO: logo + nome ===== */}
-                <View style={styles.header}>
+        <View style={styles.container}>
+            <StatusBar barStyle={"light-content"} backgroundColor={"#000000"} />
+            <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.headerImageWrapper}>
                     <Image
-                        source={require('../images/logo.png')}
-                        style={styles.logo}
-                        resizeMode="contain"
+                        source={require('../images/restaurante.png')}
+                        style={styles.headerImage}
+                        resizeMode="cover"
                     />
-                    <Text style={styles.brandName}>Mc'Donalds</Text>
-                </View>
- 
-                {/* ===== MEIO: textos de boas-vindas ===== */}
-                <View style={styles.welcomeSection}>
-                    <Text style={styles.title}>Seja bem-vindo!</Text>
-                    <Text style={styles.subtitle}>
-                        Escolha como prefere aproveitar sua refeição. Estamos aqui para
-                        oferecer praticidade e sabor em cada detalhe!
-                    </Text>
-                </View>
- 
-                <View style={styles.cardsRow}>
                     <TouchableOpacity
-                        style={styles.card}
-                        activeOpacity={0.85}
-                        onPress={() => navigation.navigate('Menu')}
+                        style={[styles.headerButton, styles.headerButtonLeft]}
+                        activeOpacity={0.8}
+                        onPress={() => navigation.goBack}
                     >
-                        <View style={styles.iconCircle}>
-                            <MaterialCommunityIcons
-                                name="hamburger"
-                                size={36}
-                                color="#000000"
+                        <Ionicons name="chevron-back" size={22} color={"#000000"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.headerButton, styles.headerButtonRight]}
+                        activeOpacity={0.8}
+                        onPress={() => { }}
+                    >
+                        <Feather name="file-text" size={20} color={'#000000'} />
+
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.infoCard}>
+                    <View style={styles.infoTopRow}>
+                        <Image
+                            source={require('../images/logo.png')}
+                            style={styles.infoLogo}
+                            resizeMode="contain"
+                        />
+
+                        <View style={styles.infoTexts}>
+                            <Text style={styles.brandName}>McDonald's</Text>
+                            <Text style={styles.brandSubtitle}>O melhor fast food do mundo</Text>
+
+                        </View>
+                    </View>
+                    <View style={styles.statusRow}>
+                        <Feather name="clock" size={14} color={'#2BAA3B'} />
+                        <Text style={styles.statusText}>Aberto!</Text>
+                    </View>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.categoriesRow}
+                    >
+                        {categories.map((category) => {
+                            const isActive = category === categoriaSelecionada;
+                            return (
+                                <TouchableOpacity
+                                    key={category}
+                                    activeOpacity={0.8}
+                                    onPress={() => setCategoriaSelecionada(category)}
+                                    style={[
+                                        styles.categoryPill,
+                                        isActive && styles.categoryPillActives
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.categoryText,
+                                            isActive && styles.categoryTextActive,
+                                        ]}>
+
+                                        {category}
+                                    </Text>
+
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </ScrollView>
+                    <Text style={styles.sectionTitle}>{categoriaSelecionada}</Text>
+                    {produtosDaCategoria.map((produto, index) => (
+                        <TouchableOpacity
+                            key={produto.id}
+                            style={[
+                                styles.productRow,
+                                index > 0 && styles.productRowDivider
+                            ]}
+                            activeOpacity={0.85}
+                            onPress={() => {
+
+                            }}
+                        >
+                            <View style={styles.productInfo}>
+                                <Text style={styles.productName}></Text>
+                                <Text style={styles.productDescription} numberOfLines={2}>
+                                    {produto.description}
+                                </Text>
+                                <Text style={styles.productPrice}>{produto.price}</Text>
+                            </View>
+                            <Image
+                                source={produto.image}
+                                style={styles.producImage}
+                                resizeMode="contain"
                             />
-                        </View>
-                        <View style={styles.cardLabelPill}>
-                            <Text style={styles.cardLabel}>Para comer aqui</Text>
-                        </View>
-                    </TouchableOpacity>
- 
-                    <TouchableOpacity
-                        style={styles.card}
-                        activeOpacity={0.85}
-                        onPress={() => navigation.navigate('Menu')}
-                    >
-                        <View style={styles.iconCircle}>
-                            <Feather name="shopping-bag" size={34} color="#000000" />
-                        </View>
-                        <View style={styles.cardLabelPill}>
-                            <Text style={styles.cardLabel}>Para levar</Text>
-                        </View>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    ))}
                 </View>
-            </View>
-        </SafeAreaView>
+            </ScrollView>
+        </View >
     );
 }
- 
- 
+
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1, // flex: 1 = ocupa toda altura disponível
-        backgroundColor: '#FFFFFF',
-    },
     container: {
         flex: 1,
+        backgroundColor: '#F2F2F2'
+    },
+    scroll: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 32
+    },
+    headerImageWrapper: {
+        width: '100%',
+        height: 240,
+        position: 'relative',
+        backgroundColor: '#000'
+    },
+    headerImage: {
+        width: '100%',
+        height: '100%',
+
+    },
+    headerButton: {
+        position: 'absolute',
+        top: 48,
+        width: 40,
+        borderRadius: 20,
         backgroundColor: '#FFFFFF',
-        paddingHorizontal: 24,
-        alignItems: 'center', // eixo horizontal (em column)
-        justifyContent: 'center', // eixo vertical (em column)
-    },
-    header: {
         alignItems: 'center',
-        marginBottom: 28,
+        justifyContent: 'center',
+        // Sombra em IOS e Android
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 4,
     },
-    logo: {
-        width: 72,
-        height: 72,
-        marginBottom: 10,
+    headerButtonLeft: {
+        left: 16,
+    },
+    headerButtonRight: {
+        right: 16,
+    },
+    infoCard: {
+        backgroundColor: '#FFFF',
+        marginTop: -24,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 16,
+        minHeight: 600,
+    },
+    infoTopRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    infoLogo: {
+        width: 48,
+        height: 48,
+        borderRadius: 8,
+    },
+    infoTexts: {
+        flex: 1,
     },
     brandName: {
-        fontSize: 22,
+        fontSize: 18,
+        color: '#000',
         fontWeight: '700',
-        color: '#000000',
-        letterSpacing: 0.3,
     },
-    welcomeSection: {
-        alignItems: 'center',
-        marginBottom: 36,
-        paddingHorizontal: 8,
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: '700',
-        color: '#000000',
-        textAlign: 'center',
-        marginBottom: 12,
-    },
-    subtitle: {
-        fontSize: 15,
-        lineHeight: 22,
+    brandSubtitle: {
+        fontSize: 13,
         color: '#707070',
-        textAlign: 'center',
+        marginTop: 2,
     },
-    cardsRow: {
+    statusRow: {
         flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'center',
-        gap: 14,
-    },
-    card: {
-        flex: 1,
-        maxWidth: 168,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20, // bordas arredondadas
-        paddingVertical: 28,
-        paddingHorizontal: 12,
         alignItems: 'center',
-        justifyContent: 'space-between',
-        minHeight: 200,
-        // Sombra iOS:
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        // Sombra Android:
-        elevation: 6,
+        gap: 6,
+        marginTop: 12,
     },
-    iconCircle: {
-        width: 72,
-        height: 72,
-        borderRadius: 36, // metade da largura/altura = círculo
+    statusText: {
+        color: '#2BAA3B',
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    categoriesRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        paddingVertical: 18,
+        paddingRight: 12,
+    },
+    categoryPill: {
+        height: 36,
+        paddingHorizontal: 18,
+        borderRadius: 18,
         backgroundColor: '#F2F2F2',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 24,
-    },
-    cardLabelPill: {
-        backgroundColor: '#F2F2F2',
-        borderRadius: 25,
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        width: '100%',
         alignItems: 'center',
     },
-    cardLabel: {
+    categoryPillActives: {
+        backgroundColor: '#FFC72C'
+    },
+    categoryText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#000000',
-        textAlign: 'center',
+        color: '#000'
     },
-});
- 
+    categoryTextActive: {
+        color: '#000'
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 8
+    },
+    productRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        gap: 12,
+    },
+    productRowDivider: {
+        borderTopWidth: 1,
+        borderTopColor: '#EEE',
+    },
+    productInfo: {
+        flex: 1,
+    },
+    productName: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 4
+    },
+    productDescription: {
+        fontSize: 13,
+        color: '#707070',
+        lineHeight: 18,
+        marginBottom: 8,
+    },
+    productPrice: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#000'
+    },
+    producImage: {
+        width: 90,
+        height: 70,
+    },
+})
